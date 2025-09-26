@@ -15,7 +15,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(email: string, password: string, name?: string) {
+  async register(email: string, password: string, name: string) {
     const userExist: User | null = await this.prisma.user.findUnique({
       where: { email },
     });

@@ -5,9 +5,15 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserModule } from './user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { UsersModule } from './modules/users/users.module';
+import { CustomersModule } from './modules/customers/customers.module';
+import { TicketsModule } from './modules/tickets/tickets.module';
+import { ConversationsModule } from './modules/conversations/conversations.module';
+import { TasksModule } from './modules/tasks/tasks.module';
+import { ActivityLogsModule } from './modules/activity-logs/activity-logs.module';
+import { NotesModule } from './modules/notes/notes.module';
 
 @Module({
   imports: [
@@ -15,7 +21,6 @@ import { JwtStrategy } from './auth/jwt.strategy';
     ConfigModule.forRoot({ isGlobal: true }), // load .env
     PrismaModule,
     AuthModule,
-    UserModule,
     JwtModule.registerAsync({
       global: true,
       inject: [ConfigService],
@@ -28,6 +33,13 @@ import { JwtStrategy } from './auth/jwt.strategy';
         };
       },
     }),
+    UsersModule,
+    CustomersModule,
+    TicketsModule,
+    ConversationsModule,
+    TasksModule,
+    ActivityLogsModule,
+    NotesModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
