@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+model User {
+  id         Int        @id @default(autoincrement())
+  name       String
+  email      String     @unique
+  password   String
+  role       Role       @default(MEMBER)
+  ticketsCreated Ticket[] @relation("creator")
+  ticketsAssigned Ticket[] @relation("assignee")
+  conversations Conversation[]
+  tasks       Task[]
+  notes       Note[]
+  activityLogs ActivityLog[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Customer {
+  id      Int      @id @default(autoincrement())
+  name    String
+  email   String
+  phone   String?
+  address String?
+  tickets Ticket[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Ticket {
+  id           Int           @id @default(autoincrement())
+  title        String
+  description  String?
+  status       String        @default("OPEN")
+  createdById  Int
+  createdBy    User          @relation("creator", fields: [createdById], references: [id])
+  assignedToId Int?
+  assignedTo   User?         @relation("assignee", fields: [assignedToId], references: [id])
+  customerId   Int
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  conversations Conversation[]
+  tasks        Task[]
+  notes        Note[]
+  activityLogs ActivityLog[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Conversation {
+  id        Int      @id @default(autoincrement())
+  content   String
+  ticketId  Int
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  createdById Int
+  createdBy User      @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Task {
+  id        Int      @id @default(autoincrement())
+  content   String
+  status    String   @default("PENDING")
+  dueDate   DateTime?
+  ticketId  Int
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  assignedToId Int?
+  assignedTo User?   @relation(fields: [assignedToId], references: [id])
+  createdById Int
+  createdBy User     @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  ticketId  Int
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  createdById Int
+  createdBy User     @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  content   String
+  ticketId  Int
+  ticket    Ticket   @relation(fields: [ticketId], references: [id])
+  createdById Int
+  createdBy User     @relation(fields: [createdById], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
