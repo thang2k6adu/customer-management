@@ -5,7 +5,6 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserModule } from './user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { UsersModule } from './modules/users/users.module';
@@ -22,7 +21,6 @@ import { NotesModule } from './modules/notes/notes.module';
     ConfigModule.forRoot({ isGlobal: true }), // load .env
     PrismaModule,
     AuthModule,
-    UserModule,
     JwtModule.registerAsync({
       global: true,
       inject: [ConfigService],

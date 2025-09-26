@@ -1,14 +1,27 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
-import { Prisma } from '@prisma/client';
+import { CreateConversationDto } from './dto/create-conversation.dto';
+import { UpdateConversationDto } from './dto/update-conversation.dto';
 
 @Controller('conversations')
 export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
 
   @Post()
-  create(@Body() data: Prisma.ConversationCreateInput) {
-    return this.conversationsService.create(data);
+  create(@Body() createConversationDto: CreateConversationDto) {
+    return this.conversationsService.create({
+      content: createConversationDto.content,
+      ticket: { connect: { id: createConversationDto.ticketId } },
+      createdBy: { connect: { id: createConversationDto.createdById } },
+    });
   }
 
   @Get()
@@ -22,8 +35,11 @@ export class ConversationsController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: Prisma.ConversationUpdateInput) {
-    return this.conversationsService.update(+id, data);
+  update(
+    @Param('id') id: string,
+    @Body() updateConversationDto: UpdateConversationDto,
+  ) {
+    return this.conversationsService.update(+id, updateConversationDto);
   }
 
   @Delete(':id')

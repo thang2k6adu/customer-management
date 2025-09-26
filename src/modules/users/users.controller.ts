@@ -8,15 +8,22 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Prisma } from '@prisma/client';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() data: Prisma.UserCreateInput) {
-    return this.usersService.create(data);
+  @Post()
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.create({
+      name: createUserDto.name,
+      email: createUserDto.email,
+      password: createUserDto.password,
+      role: createUserDto.role ?? 'MEMBER', // gán default nếu client không gửi
+    });
   }
 
   @Get()
@@ -30,8 +37,8 @@ export class UsersController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: Prisma.UserUpdateInput) {
-    return this.usersService.update(+id, data);
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(+id, updateUserDto);
   }
 
   @Delete(':id')

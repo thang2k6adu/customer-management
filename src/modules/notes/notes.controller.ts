@@ -1,14 +1,27 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { NotesService } from './notes.service';
-import { Prisma } from '@prisma/client';
+import { CreateNoteDto } from './dto/create-note.dto';
+import { UpdateNoteDto } from './dto/update-note.dto';
 
 @Controller('notes')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @Post()
-  create(@Body() data: Prisma.NoteCreateInput) {
-    return this.notesService.create(data);
+  create(@Body() createNoteDto: CreateNoteDto) {
+    return this.notesService.create({
+      content: createNoteDto.content,
+      ticket: { connect: { id: createNoteDto.ticketId } },
+      createdBy: { connect: { id: createNoteDto.createdById } },
+    });
   }
 
   @Get()
@@ -22,8 +35,8 @@ export class NotesController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() data: Prisma.NoteUpdateInput) {
-    return this.notesService.update(+id, data);
+  update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
+    return this.notesService.update(+id, updateNoteDto);
   }
 
   @Delete(':id')
