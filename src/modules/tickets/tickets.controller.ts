@@ -17,17 +17,10 @@ export class TicketsController {
 
   @Post()
   @Post()
+  @Post()
+  @Post()
   create(@Body() createTicketDto: CreateTicketDto) {
-    return this.ticketsService.create({
-      title: createTicketDto.title,
-      description: createTicketDto.description,
-      status: createTicketDto.status,
-      createdBy: { connect: { id: createTicketDto.createdById } },
-      customer: { connect: { id: createTicketDto.customerId } },
-      assignedTo: createTicketDto.assignedToId
-        ? { connect: { id: createTicketDto.assignedToId } }
-        : undefined,
-    });
+    return this.ticketsService.create(createTicketDto);
   }
 
   @Get()

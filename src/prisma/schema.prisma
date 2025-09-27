@@ -94,6 +94,12 @@ model Conversation {
   id          Int      @id @default(autoincrement())
   content     String
 
+  channel      String   // VD: "WHATSAPP", "EMAIL", "WEB", ...
+  // Một số conversations là event system (ví dụ: "Ticket Created", "Change priority", "Change Ticket Type"), không phải do người dùng nhập vào.
+  type         String   @default("MESSAGE") // "MESSAGE", "SYSTEM", "EVENT" , phân biệt loại message
+  attachments  String[] @default([])
+  senderName   String?                      // Hiển thị tên sender, nếu có tin nhắn hệ thống, Bot thì cần cái này (non user)
+
   ticketId    Int
   ticket      Ticket   @relation(fields: [ticketId], references: [id])
 
@@ -101,6 +107,10 @@ model Conversation {
   createdBy   User     @relation("ConversationCreator", fields: [createdById], references: [id])
 
   createdAt   DateTime @default(now())
+  // Hỗ trợ reply theo thread:
+  // parentId     Int?
+  // parent       Conversation? @relation("ReplyParent", fields: [parentId], references: [id])
+  // replies      Conversation[] @relation("ReplyParent")
 }
 
 model Task {
