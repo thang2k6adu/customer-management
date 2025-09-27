@@ -12,12 +12,27 @@ enum Role {
   MEMBER
 }
 
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TicketType {
+  INCIDENT
+  QUESTION
+  TASK
+  OTHER
+}
+
 model User {
   id             Int       @id @default(autoincrement())
   name           String
   email          String    @unique
   password       String
   role           Role      @default(MEMBER)
+  avatar         String?   
+
 
   ticketsCreated Ticket[]  @relation("TicketCreator")
   ticketsAssigned Ticket[] @relation("TicketAssignee")
@@ -29,7 +44,9 @@ model User {
   
   notes          Note[]    @relation("NoteCreator")
   activityLogs   ActivityLog[] @relation("ActivityLogCreator")
-  
+
+  followedTickets Ticket[] @relation("TicketFollowers")
+
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -37,6 +54,7 @@ model User {
 model Customer {
   id        Int      @id @default(autoincrement())
   name      String
+  avatar    String?  
   email     String
   phone     String?
   address   String?
@@ -51,6 +69,10 @@ model Ticket {
   description  String?
   status       String        @default("OPEN")
 
+  priority     TicketPriority @default(MEDIUM)
+  type         TicketType     @default(INCIDENT)
+  tags         String[]      @default([]) // postgresql array
+
   createdById  Int
   createdBy    User          @relation("TicketCreator", fields: [createdById], references: [id])
 
@@ -59,6 +81,8 @@ model Ticket {
 
   customerId   Int
   customer     Customer      @relation(fields: [customerId], references: [id])
+
+  followers    User[]        @relation("TicketFollowers")
 
   conversations Conversation[]
   tasks        Task[]
@@ -73,6 +97,12 @@ model Conversation {
   id          Int      @id @default(autoincrement())
   content     String
 
+  channel      String   // VD: "WHATSAPP", "EMAIL", "WEB", ...
+  // Một số conversations là event system (ví dụ: "Ticket Created", "Change priority", "Change Ticket Type"), không phải do người dùng nhập vào.
+  type         String   @default("MESSAGE") // "MESSAGE", "SYSTEM", "EVENT" , phân biệt loại message
+  attachments  String[] @default([])
+  senderName   String?                      // Hiển thị tên sender, nếu có tin nhắn hệ thống, Bot thì cần cái này (non user)
+
   ticketId    Int
   ticket      Ticket   @relation(fields: [ticketId], references: [id])
 
@@ -80,6 +110,10 @@ model Conversation {
   createdBy   User     @relation("ConversationCreator", fields: [createdById], references: [id])
 
   createdAt   DateTime @default(now())
+  // Hỗ trợ reply theo thread:
+  // parentId     Int?
+  // parent       Conversation? @relation("ReplyParent", fields: [parentId], references: [id])
+  // replies      Conversation[] @relation("ReplyParent")
 }
 
 model Task {

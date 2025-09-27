@@ -1,4 +1,4 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsOptional, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateConversationDto {
@@ -6,11 +6,52 @@ export class CreateConversationDto {
   @IsString()
   content!: string;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({
+    example: 'WHATSAPP',
+    description: 'Kênh hội thoại: WEB, EMAIL, WHATSAPP...',
+  })
+  @IsString()
+  channel!: string;
+
+  @ApiProperty({
+    example: 'MESSAGE',
+    description: 'Loại conversation: MESSAGE, SYSTEM, EVENT',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  type?: string; // default: "MESSAGE"
+
+  @ApiProperty({
+    example: ['file1.png', 'file2.pdf'],
+    required: false,
+    type: [String],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  attachments?: string[];
+
+  @ApiProperty({
+    example: 'System Bot',
+    required: false,
+    description: 'Tên sender hiển thị, dùng cho bot hoặc system',
+  })
+  @IsOptional()
+  @IsString()
+  senderName?: string;
+
+  @ApiProperty({ example: 1, description: 'ID ticket liên quan' })
   @IsInt()
   ticketId!: number;
 
-  @ApiProperty({ example: 1 })
+  @ApiProperty({ example: 1, description: 'ID user tạo conversation' })
   @IsInt()
   createdById!: number;
+
+  // Nếu sau này bật reply theo thread:
+  // @ApiProperty({ example: 5, required: false, description: 'ID conversation cha (reply)' })
+  // @IsOptional()
+  // @IsInt()
+  // parentId?: number;
 }

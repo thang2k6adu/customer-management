@@ -19,4 +19,12 @@ export class CreateCustomerDto {
   @IsOptional()
   @IsString()
   address?: string;
+
+  @ApiProperty({
+    example: 'https://example.com/customer.png',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  avatar?: string; // 👈 thêm field avatar
 }

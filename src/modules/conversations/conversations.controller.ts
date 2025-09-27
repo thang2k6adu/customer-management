@@ -17,11 +17,7 @@ export class ConversationsController {
 
   @Post()
   create(@Body() createConversationDto: CreateConversationDto) {
-    return this.conversationsService.create({
-      content: createConversationDto.content,
-      ticket: { connect: { id: createConversationDto.ticketId } },
-      createdBy: { connect: { id: createConversationDto.createdById } },
-    });
+    return this.conversationsService.create(createConversationDto);
   }
 
   @Get()
