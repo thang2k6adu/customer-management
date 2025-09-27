@@ -12,6 +12,19 @@ enum Role {
   MEMBER
 }
 
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TicketType {
+  INCIDENT
+  QUESTION
+  TASK
+  OTHER
+}
+
 model User {
   id             Int       @id @default(autoincrement())
   name           String
@@ -29,7 +42,9 @@ model User {
   
   notes          Note[]    @relation("NoteCreator")
   activityLogs   ActivityLog[] @relation("ActivityLogCreator")
-  
+
+  followedTickets Ticket[] @relation("TicketFollowers", references: [id])
+
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -51,6 +66,10 @@ model Ticket {
   description  String?
   status       String        @default("OPEN")
 
+  priority     TicketPriority @default(MEDIUM)
+  type         TicketType     @default(INCIDENT)
+  tags         String[]      @default([]) // postgresql array
+
   createdById  Int
   createdBy    User          @relation("TicketCreator", fields: [createdById], references: [id])
 
@@ -59,6 +78,8 @@ model Ticket {
 
   customerId   Int
   customer     Customer      @relation(fields: [customerId], references: [id])
+
+  followers    User[]        @relation("TicketFollowers")
 
   conversations Conversation[]
   tasks        Task[]
