@@ -43,7 +43,7 @@ model User {
   notes          Note[]    @relation("NoteCreator")
   activityLogs   ActivityLog[] @relation("ActivityLogCreator")
 
-  followedTickets Ticket[] @relation("TicketFollowers", references: [id])
+  followedTickets Ticket[] @relation("TicketFollowers")
 
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
