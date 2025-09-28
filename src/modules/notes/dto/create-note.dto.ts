@@ -9,8 +9,4 @@ export class CreateNoteDto {
   @ApiProperty({ example: 1 })
   @IsInt()
   ticketId!: number;
-
-  @ApiProperty({ example: 1 })
-  @IsInt()
-  createdById!: number;
 }
