@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -21,15 +22,19 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Role } from '@prisma/client';
 
 @ApiTags('Users')
-@ApiBearerAuth() // Swagger hiển thị Bearer token cho tất cả endpoint
-@UseGuards(JwtAuthGuard) // bảo vệ toàn bộ controller
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Tạo user mới (admin)' })
   @ApiResponse({ status: 201, description: 'User được tạo thành công' })
   create(@Body() createUserDto: CreateUserDto) {
@@ -42,20 +47,27 @@ export class UsersController {
   }
 
   @Get()
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Lấy danh sách tất cả user (admin)' })
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
+  @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({
     summary: 'Lấy thông tin user theo id (admin hoặc chính user)',
   })
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string, @Req() req: AuthRequest) {
+    const userId = req.user.userId;
+    if (req.user.role === Role.MEMBER && +id !== userId) {
+      throw new ForbiddenException('Không có quyền xem user này');
+    }
     return this.usersService.findOne(+id);
   }
 
   @Put('password')
+  @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Cập nhật mật khẩu (chỉ chính user)' })
   updatePassword(
     @Req() req: AuthRequest,
@@ -66,12 +78,21 @@ export class UsersController {
   }
 
   @Put(':id')
+  @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Cập nhật user (admin hoặc chính user)' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(
+    @Param('id') id: string,
+    @Req() req: AuthRequest,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    if (req.user.role === Role.MEMBER && +id !== req.user.userId) {
+      throw new ForbiddenException('Không có quyền cập nhật user này');
+    }
     return this.usersService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Xóa user (admin)' })
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
