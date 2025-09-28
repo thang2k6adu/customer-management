@@ -9,6 +9,7 @@ async function bootstrap() {
     .setTitle('Ticket System API')
     .setDescription('CRUD API cho User, Customer, Ticket, etc.')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

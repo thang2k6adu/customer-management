@@ -15,6 +15,7 @@ export class CreateTicketDto {
   @IsString()
   description?: string;
 
+  // Cái này sửa sau vậy
   @ApiProperty({ example: 1, description: 'ID người tạo' })
   @IsInt()
   createdById!: number;
@@ -32,6 +33,7 @@ export class CreateTicketDto {
   @IsInt()
   assignedToId?: number;
 
+  // sau này implement enum
   @ApiProperty({ example: 'OPEN', required: false })
   @IsOptional()
   @IsString()
