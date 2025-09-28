@@ -6,48 +6,78 @@ import {
   Param,
   Put,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from '@prisma/client';
+import type { AuthRequest } from 'src/common/interfaces/auth-request.interface';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Tasks')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Controller('tickets/:ticketId/tasks')
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create({
-      content: createTaskDto.content,
-      status: createTaskDto.status,
-      dueDate: createTaskDto.dueDate
-        ? new Date(createTaskDto.dueDate)
-        : undefined,
-      ticket: { connect: { id: createTaskDto.ticketId } },
-      createdBy: { connect: { id: createTaskDto.createdById } },
-      assignedTo: createTaskDto.assignedToId
-        ? { connect: { id: createTaskDto.assignedToId } }
-        : undefined,
-    });
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiOperation({ summary: 'Tạo task trong ticket' })
+  @ApiResponse({ status: 201, description: 'Task được tạo thành công' })
+  create(
+    @Param('ticketId') ticketId: string,
+    @Body() dto: CreateTaskDto,
+    @Req() req: AuthRequest,
+  ) {
+    return this.tasksService.create(
+      { ...dto, ticketId: +ticketId },
+      req.user.userId,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.tasksService.findAll();
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiOperation({ summary: 'Lấy tất cả task của ticket' })
+  findAll(@Param('ticketId') ticketId: string, @Req() req: AuthRequest) {
+    return this.tasksService.findAllByTicket(+ticketId, req.user.userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tasksService.findOne(+id);
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiOperation({ summary: 'Lấy task theo ID' })
+  findOne(@Param('id') id: string, @Req() req: AuthRequest) {
+    return this.tasksService.findOne(+id, req.user.userId);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.tasksService.update(+id, updateTaskDto);
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiOperation({ summary: 'Cập nhật task (chỉ creator hoặc admin)' })
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateTaskDto,
+    @Req() req: AuthRequest,
+  ) {
+    const isAdmin = req.user.role === Role.ADMIN;
+    return this.tasksService.update(+id, dto, req.user.userId, isAdmin);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tasksService.remove(+id);
+  @Roles(Role.ADMIN, Role.MEMBER)
+  @ApiOperation({ summary: 'Xóa task (chỉ creator hoặc admin)' })
+  remove(@Param('id') id: string, @Req() req: AuthRequest) {
+    const isAdmin = req.user.role === Role.ADMIN;
+    return this.tasksService.remove(+id, req.user.userId, isAdmin);
   }
 }
