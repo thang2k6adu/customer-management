@@ -34,6 +34,8 @@ model User {
   avatar         String?   
 
 
+  customersCreated Customer[] @relation("UserCustomersCreated") 
+
   ticketsCreated Ticket[]  @relation("TicketCreator")
   ticketsAssigned Ticket[] @relation("TicketAssignee")
 
@@ -61,6 +63,9 @@ model Customer {
   tickets   Ticket[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  createdById Int
+  createdBy   User @relation("UserCustomersCreated", fields: [createdById], references: [id])
 }
 
 model Ticket {
