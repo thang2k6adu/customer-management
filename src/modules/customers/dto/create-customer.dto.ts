@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateCustomerDto {
@@ -15,16 +15,13 @@ export class CreateCustomerDto {
   @IsString()
   phone?: string;
 
-  @ApiProperty({ example: '123 Đường Lê Lợi, HN', required: false })
+  @ApiProperty({ example: 'Hà Nội', required: false })
   @IsOptional()
   @IsString()
   address?: string;
 
-  @ApiProperty({
-    example: 'https://example.com/customer.png',
-    required: false,
-  })
+  @ApiProperty({ example: 'https://example.com/avatar.png', required: false })
   @IsOptional()
   @IsString()
-  avatar?: string; // 👈 thêm field avatar
+  avatar?: string;
 }
