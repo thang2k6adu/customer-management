@@ -15,11 +15,6 @@ export class CreateTicketDto {
   @IsString()
   description?: string;
 
-  // Cái này sửa sau vậy
-  @ApiProperty({ example: 1, description: 'ID người tạo' })
-  @IsInt()
-  createdById!: number;
-
   @ApiProperty({ example: 1, description: 'ID khách hàng' })
   @IsInt()
   customerId!: number;
