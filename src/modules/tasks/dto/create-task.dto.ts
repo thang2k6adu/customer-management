@@ -20,10 +20,6 @@ export class CreateTaskDto {
   @IsInt()
   ticketId!: number;
 
-  @ApiProperty({ example: 1 }) // Người tạo task
-  @IsInt()
-  createdById!: number;
-
   @ApiProperty({ example: 2, required: false }) // Người được assign
   @IsOptional()
   @IsInt()

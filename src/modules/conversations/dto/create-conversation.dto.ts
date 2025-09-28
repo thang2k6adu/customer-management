@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsOptional, IsArray } from 'class-validator';
+import { IsString, IsOptional, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateConversationDto {
@@ -40,14 +40,6 @@ export class CreateConversationDto {
   @IsOptional()
   @IsString()
   senderName?: string;
-
-  @ApiProperty({ example: 1, description: 'ID ticket liên quan' })
-  @IsInt()
-  ticketId!: number;
-
-  @ApiProperty({ example: 1, description: 'ID user tạo conversation' })
-  @IsInt()
-  createdById!: number;
 
   // Nếu sau này bật reply theo thread:
   // @ApiProperty({ example: 5, required: false, description: 'ID conversation cha (reply)' })
