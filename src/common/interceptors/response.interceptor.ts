@@ -38,7 +38,7 @@ export class ResponseInterceptor<T>
         if (isRawResponse<T>(resData)) {
           // TypeScript hiểu chắc chắn resData là RawResponse<T>
           const message = resData.message ?? 'Success';
-          const data = resData.data;
+          const data = resData.data || null;
           const error = resData.error ?? false;
 
           return { error, code: response.statusCode, message, data, traceId };
@@ -47,7 +47,7 @@ export class ResponseInterceptor<T>
           error: false,
           code: response.statusCode,
           message: 'Success',
-          data: resData,
+          data: resData || null,
           traceId,
         };
       }),
