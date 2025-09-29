@@ -35,47 +35,80 @@ export class ConversationsController {
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Tạo conversation mới cho ticket' })
   @ApiResponse({ status: 201, description: 'Conversation được tạo thành công' })
-  create(
+  async create(
     @Param('ticketId') ticketId: string,
     @Body() dto: CreateConversationDto,
     @Req() req: AuthRequest,
   ) {
     // Không lấy createdById từ client nữa, dùng req.user
-    return this.conversationsService.create(dto, req.user.userId, +ticketId);
+    const data = await this.conversationsService.create(
+      dto,
+      req.user.userId,
+      +ticketId,
+    );
+    
+    return {
+      message: 'Tạo conversation thành công',
+      data,
+    };
   }
 
   @Get()
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Lấy tất cả conversation của ticket' })
-  findAll(@Param('ticketId') ticketId: string, @Req() req: AuthRequest) {
-    return this.conversationsService.findAllByTicket(
+  async findAll(@Param('ticketId') ticketId: string, @Req() req: AuthRequest) {
+    const data = await this.conversationsService.findAllByTicket(
       +ticketId,
       req.user.userId,
     );
+    
+    return {
+      message: 'Lấy danh sách conversation thành công',
+      data,
+    };
   }
 
   @Get(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Lấy conversation theo ID' })
-  findOne(@Param('id') id: string, @Req() req: AuthRequest) {
-    return this.conversationsService.findOne(+id, req.user.userId);
+  async findOne(@Param('id') id: string, @Req() req: AuthRequest) {
+    const data = await this.conversationsService.findOne(+id, req.user.userId);
+    
+    return {
+      message: 'Lấy thông tin conversation thành công',
+      data,
+    };
   }
 
   @Put(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Cập nhật conversation (chỉ creator)' })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdateConversationDto,
     @Req() req: AuthRequest,
   ) {
-    return this.conversationsService.update(+id, dto, req.user.userId);
+    const data = await this.conversationsService.update(
+      +id,
+      dto,
+      req.user.userId,
+    );
+    
+    return {
+      message: 'Cập nhật conversation thành công',
+      data,
+    };
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Xóa conversation (chỉ creator)' })
-  remove(@Param('id') id: string, @Req() req: AuthRequest) {
-    return this.conversationsService.remove(+id, req.user.userId);
+  async remove(@Param('id') id: string, @Req() req: AuthRequest) {
+    const data = await this.conversationsService.remove(+id, req.user.userId);
+    
+    return {
+      message: 'Xóa conversation thành công',
+      data,
+    };
   }
 }

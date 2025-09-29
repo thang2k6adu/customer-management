@@ -30,15 +30,25 @@ export class TicketsController {
   @Post()
   @Roles(Role.MEMBER, Role.ADMIN)
   @ApiOperation({ summary: 'Tạo ticket mới' })
-  create(@Req() req: AuthRequest, @Body() dto: CreateTicketDto) {
-    return this.ticketsService.create(dto, req.user.userId);
+  async create(@Req() req: AuthRequest, @Body() dto: CreateTicketDto) {
+    const data = await this.ticketsService.create(dto, req.user.userId);
+
+    return {
+      message: 'Tạo ticket thành công',
+      data,
+    };
   }
 
   @Get()
   @Roles(Role.MEMBER, Role.ADMIN)
   @ApiOperation({ summary: 'Lấy danh sách ticket' })
-  findAll(@Req() req: AuthRequest) {
-    return this.ticketsService.findAll(req.user);
+  async findAll(@Req() req: AuthRequest) {
+    const data = await this.ticketsService.findAll(req.user);
+
+    return {
+      message: 'Lấy danh sách ticket thành công',
+      data,
+    };
   }
 
   @Get(':id')
@@ -47,7 +57,11 @@ export class TicketsController {
   async findOne(@Param('id') id: string, @Req() req: AuthRequest) {
     const ticket = await this.ticketsService.findOne(+id, req.user);
     if (!ticket) throw new ForbiddenException('Không có quyền xem ticket này');
-    return ticket;
+
+    return {
+      message: 'Lấy thông tin ticket thành công',
+      data: ticket,
+    };
   }
 
   @Put(':id')
@@ -58,13 +72,23 @@ export class TicketsController {
     @Req() req: AuthRequest,
     @Body() dto: UpdateTicketDto,
   ) {
-    return this.ticketsService.update(+id, dto, req.user);
+    const data = await this.ticketsService.update(+id, dto, req.user);
+
+    return {
+      message: 'Cập nhật ticket thành công',
+      data,
+    };
   }
 
   @Delete(':id')
   @Roles(Role.MEMBER, Role.ADMIN)
   @ApiOperation({ summary: 'Xóa ticket' })
   async remove(@Param('id') id: string, @Req() req: AuthRequest) {
-    return this.ticketsService.remove(+id, req.user);
+    const data = await this.ticketsService.remove(+id, req.user);
+
+    return {
+      message: 'Xóa ticket thành công',
+      data,
+    };
   }
 }

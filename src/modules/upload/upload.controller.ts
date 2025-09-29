@@ -43,6 +43,10 @@ export class UploadController {
     const urls = files.map(
       (file) => `/uploads/user_${userId}/${file.filename}`,
     );
-    return { userId, urls };
+
+    return {
+      message: 'Upload file thành công',
+      data: { userId, urls },
+    };
   }
 }

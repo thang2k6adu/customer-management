@@ -29,27 +29,42 @@ export class ActivityLogsController {
   @Post()
   @ApiOperation({ summary: 'Tạo activity log cho ticket' })
   @ApiResponse({ status: 201, description: 'Activity log được tạo thành công' })
-  create(
+  async create(
     @Param('ticketId') ticketId: string,
     @Body() dto: CreateActivityLogDto,
     @Req() req: AuthRequest,
   ) {
-    return this.activityLogsService.create(
+    const data = await this.activityLogsService.create(
       dto.action,
       req.user.userId,
       +ticketId,
     );
+
+    return {
+      message: 'Tạo activity log thành công',
+      data,
+    };
   }
 
   @Get()
   @ApiOperation({ summary: 'Lấy tất cả activity log của ticket' })
-  findAll(@Param('ticketId') ticketId: string) {
-    return this.activityLogsService.findAllByTicket(+ticketId);
+  async findAll(@Param('ticketId') ticketId: string) {
+    const data = await this.activityLogsService.findAllByTicket(+ticketId);
+
+    return {
+      message: 'Lấy danh sách activity log thành công',
+      data,
+    };
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Lấy chi tiết activity log theo ID của ticket' })
-  findOne(@Param('id') id: string) {
-    return this.activityLogsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const data = await this.activityLogsService.findOne(+id);
+
+    return {
+      message: 'Lấy thông tin activity log thành công',
+      data,
+    };
   }
 }

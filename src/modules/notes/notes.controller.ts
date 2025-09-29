@@ -29,48 +29,81 @@ export class NotesController {
   @Post()
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Thêm note vào ticket' })
-  create(
+  async create(
     @Param('ticketId') ticketId: string,
     @Body() dto: CreateNoteDto,
     @Req() req: AuthRequest,
   ) {
-    return this.notesService.create(
+    const data = await this.notesService.create(
       { ...dto, ticketId: +ticketId },
       req.user.userId,
     );
+
+    return {
+      message: 'Tạo note thành công',
+      data,
+    };
   }
 
   @Get()
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Lấy tất cả note của ticket' })
-  findAll(@Param('ticketId') ticketId: string, @Req() req: AuthRequest) {
-    return this.notesService.findAllByTicket(+ticketId, req.user.userId);
+  async findAll(@Param('ticketId') ticketId: string, @Req() req: AuthRequest) {
+    const data = await this.notesService.findAllByTicket(
+      +ticketId,
+      req.user.userId,
+    );
+
+    return {
+      message: 'Lấy danh sách note thành công',
+      data,
+    };
   }
 
   @Get(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Lấy note theo ID' })
-  findOne(@Param('id') id: string, @Req() req: AuthRequest) {
-    return this.notesService.findOne(+id, req.user.userId);
+  async findOne(@Param('id') id: string, @Req() req: AuthRequest) {
+    const data = await this.notesService.findOne(+id, req.user.userId);
+
+    return {
+      message: 'Lấy thông tin note thành công',
+      data,
+    };
   }
 
   @Put(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Cập nhật note (chỉ creator hoặc admin)' })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdateNoteDto,
     @Req() req: AuthRequest,
   ) {
     const isAdmin = req.user.role === Role.ADMIN;
-    return this.notesService.update(+id, dto, req.user.userId, isAdmin);
+    const data = await this.notesService.update(
+      +id,
+      dto,
+      req.user.userId,
+      isAdmin,
+    );
+
+    return {
+      message: 'Cập nhật note thành công',
+      data,
+    };
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Xóa note (chỉ creator hoặc admin)' })
-  remove(@Param('id') id: string, @Req() req: AuthRequest) {
+  async remove(@Param('id') id: string, @Req() req: AuthRequest) {
     const isAdmin = req.user.role === Role.ADMIN;
-    return this.notesService.remove(+id, req.user.userId, isAdmin);
+    const data = await this.notesService.remove(+id, req.user.userId, isAdmin);
+
+    return {
+      message: 'Xóa note thành công',
+      data,
+    };
   }
 }
