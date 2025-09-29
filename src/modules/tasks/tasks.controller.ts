@@ -36,48 +36,81 @@ export class TasksController {
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Tạo task trong ticket' })
   @ApiResponse({ status: 201, description: 'Task được tạo thành công' })
-  create(
+  async create(
     @Param('ticketId') ticketId: string,
     @Body() dto: CreateTaskDto,
     @Req() req: AuthRequest,
   ) {
-    return this.tasksService.create(
+    const data = await this.tasksService.create(
       { ...dto, ticketId: +ticketId },
       req.user.userId,
     );
+
+    return {
+      message: 'Tạo task thành công',
+      data,
+    };
   }
 
   @Get()
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Lấy tất cả task của ticket' })
-  findAll(@Param('ticketId') ticketId: string, @Req() req: AuthRequest) {
-    return this.tasksService.findAllByTicket(+ticketId, req.user.userId);
+  async findAll(@Param('ticketId') ticketId: string, @Req() req: AuthRequest) {
+    const data = await this.tasksService.findAllByTicket(
+      +ticketId,
+      req.user.userId,
+    );
+
+    return {
+      message: 'Lấy danh sách task thành công',
+      data,
+    };
   }
 
   @Get(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Lấy task theo ID' })
-  findOne(@Param('id') id: string, @Req() req: AuthRequest) {
-    return this.tasksService.findOne(+id, req.user.userId);
+  async findOne(@Param('id') id: string, @Req() req: AuthRequest) {
+    const data = await this.tasksService.findOne(+id, req.user.userId);
+
+    return {
+      message: 'Lấy thông tin task thành công',
+      data,
+    };
   }
 
   @Put(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Cập nhật task (chỉ creator hoặc admin)' })
-  update(
+  async update(
     @Param('id') id: string,
     @Body() dto: UpdateTaskDto,
     @Req() req: AuthRequest,
   ) {
     const isAdmin = req.user.role === Role.ADMIN;
-    return this.tasksService.update(+id, dto, req.user.userId, isAdmin);
+    const data = await this.tasksService.update(
+      +id,
+      dto,
+      req.user.userId,
+      isAdmin,
+    );
+
+    return {
+      message: 'Cập nhật task thành công',
+      data,
+    };
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Xóa task (chỉ creator hoặc admin)' })
-  remove(@Param('id') id: string, @Req() req: AuthRequest) {
+  async remove(@Param('id') id: string, @Req() req: AuthRequest) {
     const isAdmin = req.user.role === Role.ADMIN;
-    return this.tasksService.remove(+id, req.user.userId, isAdmin);
+    const data = await this.tasksService.remove(+id, req.user.userId, isAdmin);
+
+    return {
+      message: 'Xóa task thành công',
+      data,
+    };
   }
 }

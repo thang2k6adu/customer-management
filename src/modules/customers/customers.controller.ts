@@ -36,7 +36,7 @@ export class CustomersController {
   @Roles(Role.MEMBER, Role.ADMIN)
   @ApiOperation({ summary: 'Tạo khách hàng mới (admin & member)' })
   @ApiResponse({ status: 201, description: 'Khách hàng được tạo thành công' })
-  create(
+  async create(
     @Req() req: AuthRequest,
     @Body() createCustomerDto: CreateCustomerDto,
   ) {
@@ -44,7 +44,13 @@ export class CustomersController {
       ...createCustomerDto,
       createdBy: { connect: { id: req.user.userId } },
     };
-    return this.customersService.create(data);
+
+    const result = await this.customersService.create(data);
+
+    return {
+      message: 'Tạo khách hàng thành công',
+      data: result,
+    };
   }
 
   @Get()
@@ -53,12 +59,18 @@ export class CustomersController {
     summary: 'Lấy danh sách khách hàng (admin all & member own client)',
   })
   @ApiResponse({ status: 200, description: 'Danh sách khách hàng' })
-  findAll(@Req() req: AuthRequest) {
+  async findAll(@Req() req: AuthRequest) {
     const where =
       req.user.role === Role.MEMBER
         ? { createdById: req.user.userId }
         : undefined;
-    return this.customersService.findAll(where);
+
+    const data = await this.customersService.findAll(where);
+
+    return {
+      message: 'Lấy danh sách khách hàng thành công',
+      data,
+    };
   }
 
   @Get(':id')
@@ -69,7 +81,12 @@ export class CustomersController {
   @ApiResponse({ status: 200, description: 'Thông tin khách hàng' })
   async findOne(@Param('id') id: string, @Req() req: AuthRequest) {
     const customer = await this.customersService.findOne(+id);
-    if (!customer) return null;
+    if (!customer) {
+      return {
+        message: 'Không tìm thấy khách hàng',
+        data: null,
+      };
+    }
 
     if (
       req.user.role === Role.MEMBER &&
@@ -77,7 +94,11 @@ export class CustomersController {
     ) {
       throw new ForbiddenException('Không có quyền xem khách hàng này');
     }
-    return customer;
+
+    return {
+      message: 'Lấy thông tin khách hàng thành công',
+      data: customer,
+    };
   }
 
   @Put(':id')
@@ -90,7 +111,12 @@ export class CustomersController {
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
     const customer = await this.customersService.findOne(+id);
-    if (!customer) return null;
+    if (!customer) {
+      return {
+        message: 'Không tìm thấy khách hàng',
+        data: null,
+      };
+    }
 
     if (
       req.user.role === Role.MEMBER &&
@@ -99,7 +125,12 @@ export class CustomersController {
       throw new ForbiddenException('Không có quyền cập nhật khách hàng này');
     }
 
-    return this.customersService.update(+id, updateCustomerDto);
+    const data = await this.customersService.update(+id, updateCustomerDto);
+
+    return {
+      message: 'Cập nhật thông tin khách hàng thành công',
+      data,
+    };
   }
 
   @Delete(':id')
@@ -108,7 +139,12 @@ export class CustomersController {
   @ApiResponse({ status: 200, description: 'Khách hàng đã được xóa' })
   async remove(@Param('id') id: string, @Req() req: AuthRequest) {
     const customer = await this.customersService.findOne(+id);
-    if (!customer) return null;
+    if (!customer) {
+      return {
+        message: 'Không tìm thấy khách hàng',
+        data: null,
+      };
+    }
 
     if (
       req.user.role === Role.MEMBER &&
@@ -117,6 +153,11 @@ export class CustomersController {
       throw new ForbiddenException('Không có quyền xóa khách hàng này');
     }
 
-    return this.customersService.remove(+id);
+    const data = await this.customersService.remove(+id);
+
+    return {
+      message: 'Xóa khách hàng thành công',
+      data,
+    };
   }
 }

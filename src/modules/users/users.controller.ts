@@ -37,20 +37,30 @@ export class UsersController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Tạo user mới (admin)' })
   @ApiResponse({ status: 201, description: 'User được tạo thành công' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create({
+  async create(@Body() createUserDto: CreateUserDto) {
+    const data = await this.usersService.create({
       name: createUserDto.name,
       email: createUserDto.email,
       password: createUserDto.password,
       role: createUserDto.role ?? 'MEMBER',
     });
+
+    return {
+      message: 'Tạo user thành công',
+      data,
+    };
   }
 
   @Get()
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Lấy danh sách tất cả user (admin)' })
-  findAll() {
-    return this.usersService.findAll();
+  async findAll() {
+    const data = await this.usersService.findAll();
+
+    return {
+      message: 'Lấy danh sách user thành công',
+      data,
+    };
   }
 
   @Get(':id')
@@ -58,29 +68,43 @@ export class UsersController {
   @ApiOperation({
     summary: 'Lấy thông tin user theo id (admin hoặc chính user)',
   })
-  findOne(@Param('id') id: string, @Req() req: AuthRequest) {
+  async findOne(@Param('id') id: string, @Req() req: AuthRequest) {
     const userId = req.user.userId;
     if (req.user.role === Role.MEMBER && +id !== userId) {
       throw new ForbiddenException('Không có quyền xem user này');
     }
-    return this.usersService.findOne(+id);
+
+    const data = await this.usersService.findOne(+id);
+
+    return {
+      message: 'Lấy thông tin user thành công',
+      data,
+    };
   }
 
   @Put('password')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Cập nhật mật khẩu (chỉ chính user)' })
-  updatePassword(
+  async updatePassword(
     @Req() req: AuthRequest,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
     const userId = req.user.userId;
-    return this.usersService.updatePassword(userId, updatePasswordDto);
+    const data = await this.usersService.updatePassword(
+      userId,
+      updatePasswordDto,
+    );
+
+    return {
+      message: 'Cập nhật mật khẩu thành công',
+      data,
+    };
   }
 
   @Put(':id')
   @Roles(Role.ADMIN, Role.MEMBER)
   @ApiOperation({ summary: 'Cập nhật user (admin hoặc chính user)' })
-  update(
+  async update(
     @Param('id') id: string,
     @Req() req: AuthRequest,
     @Body() updateUserDto: UpdateUserDto,
@@ -88,13 +112,24 @@ export class UsersController {
     if (req.user.role === Role.MEMBER && +id !== req.user.userId) {
       throw new ForbiddenException('Không có quyền cập nhật user này');
     }
-    return this.usersService.update(+id, updateUserDto);
+
+    const data = await this.usersService.update(+id, updateUserDto);
+
+    return {
+      message: 'Cập nhật thông tin user thành công',
+      data,
+    };
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Xóa user (admin)' })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async remove(@Param('id') id: string) {
+    const data = await this.usersService.remove(+id);
+
+    return {
+      message: 'Xóa user thành công',
+      data,
+    };
   }
 }
