@@ -12,6 +12,14 @@ enum Role {
   MEMBER
 }
 
+enum TicketStatus {
+  OPEN       // Mới tạo, chưa giải quyết
+  IN_PROGRESS // Đang xử lý
+  SOLVED     // Đã giải quyết
+  CLOSED     // Đã đóng
+  PENDING    // Đang chờ
+}
+
 enum TicketPriority {
   LOW
   MEDIUM
@@ -72,7 +80,7 @@ model Ticket {
   id           Int           @id @default(autoincrement())
   title        String
   description  String?
-  status       String        @default("OPEN")
+  status       TicketStatus        @default("OPEN")
 
   priority     TicketPriority @default(MEDIUM)
   type         TicketType     @default(INCIDENT)
