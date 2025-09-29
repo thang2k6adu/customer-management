@@ -46,7 +46,7 @@ export class ConversationsController {
       req.user.userId,
       +ticketId,
     );
-    
+
     return {
       message: 'Tạo conversation thành công',
       data,
@@ -61,7 +61,7 @@ export class ConversationsController {
       +ticketId,
       req.user.userId,
     );
-    
+
     return {
       message: 'Lấy danh sách conversation thành công',
       data,
@@ -73,7 +73,7 @@ export class ConversationsController {
   @ApiOperation({ summary: 'Lấy conversation theo ID' })
   async findOne(@Param('id') id: string, @Req() req: AuthRequest) {
     const data = await this.conversationsService.findOne(+id, req.user.userId);
-    
+
     return {
       message: 'Lấy thông tin conversation thành công',
       data,
@@ -93,7 +93,7 @@ export class ConversationsController {
       dto,
       req.user.userId,
     );
-    
+
     return {
       message: 'Cập nhật conversation thành công',
       data,
@@ -105,7 +105,7 @@ export class ConversationsController {
   @ApiOperation({ summary: 'Xóa conversation (chỉ creator)' })
   async remove(@Param('id') id: string, @Req() req: AuthRequest) {
     const data = await this.conversationsService.remove(+id, req.user.userId);
-    
+
     return {
       message: 'Xóa conversation thành công',
       data,
