@@ -14,6 +14,7 @@ import { ConversationsModule } from './modules/conversations/conversations.modul
 import { TasksModule } from './modules/tasks/tasks.module';
 import { ActivityLogsModule } from './modules/activity-logs/activity-logs.module';
 import { NotesModule } from './modules/notes/notes.module';
+import { UploadModule } from './modules/upload/upload.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { NotesModule } from './modules/notes/notes.module';
         };
       },
     }),
+    UploadModule,
     UsersModule,
     CustomersModule,
     TicketsModule,
