@@ -4,6 +4,7 @@ import { ActivityLogsService } from './activity-logs.service';
 
 @Module({
   controllers: [ActivityLogsController],
-  providers: [ActivityLogsService]
+  providers: [ActivityLogsService],
+  exports: [ActivityLogsService], // <- Export để inject sang module khác
 })
 export class ActivityLogsModule {}
