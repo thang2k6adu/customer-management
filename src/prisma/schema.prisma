@@ -80,7 +80,7 @@ model Ticket {
   id           Int           @id @default(autoincrement())
   title        String
   description  String?
-  status       TicketStatus        @default("OPEN")
+  status       TicketStatus        @default(OPEN)
 
   priority     TicketPriority @default(MEDIUM)
   type         TicketType     @default(INCIDENT)

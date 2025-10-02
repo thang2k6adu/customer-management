@@ -10,7 +10,7 @@ import { nanoid } from 'nanoid';
 import { Request, Response } from 'express';
 import { ApiResponse } from '../interfaces/api-response.interface';
 import { RawResponse } from '../interfaces/raw-response.interface';
-import { isRawResponse } from 'src/utils/isRawResponse';
+import { isRawResponse } from '../../utils/isRawResponse';
 
 @Injectable()
 export class ResponseInterceptor<T>
