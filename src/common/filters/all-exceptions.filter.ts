@@ -43,12 +43,22 @@ export class AllExceptionsFilter implements ExceptionFilter {
       } else {
         message = 'Có lỗi xảy ra, vui lòng thử lại sau.';
       }
+      if (
+        ![
+          HttpStatus.UNAUTHORIZED,
+          HttpStatus.FORBIDDEN,
+          HttpStatus.NOT_FOUND,
+        ].includes(status)
+      ) {
+        status = HttpStatus.OK;
+      }
     }
     // Handle runtime errors
     else if (exception instanceof Error) {
       message = isDev
         ? `${exception.message}${isDev ? `\n${exception.stack}` : ''}`
         : 'Có lỗi xảy ra, vui lòng thử lại sau.';
+      status = HttpStatus.OK; // runtime error → luôn trả 200
     }
 
     // Log lỗi ra console / logger
