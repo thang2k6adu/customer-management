@@ -24,7 +24,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: '*',
-    credentials: true, // nếu cần gửi cookie
+    credentials: false, // nếu cần gửi cookie
   });
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
