@@ -1,6 +1,7 @@
 import { IsString, IsOptional, IsInt, IsEnum, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TicketPriority, TicketType } from '@prisma/client';
+import { TicketStatus } from '@prisma/client';
 
 export class CreateTicketDto {
   @ApiProperty({ example: 'Lỗi đăng nhập' })
@@ -29,10 +30,10 @@ export class CreateTicketDto {
   assignedToId?: number;
 
   // sau này implement enum
-  @ApiProperty({ example: 'OPEN', required: false })
+  @ApiProperty({ example: 'OPEN', enum: TicketStatus, required: false })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(TicketStatus)
+  status?: TicketStatus;
 
   @ApiProperty({ example: 'HIGH', enum: TicketPriority, required: false })
   @IsOptional()
