@@ -22,6 +22,11 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseInterceptor());
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  app.enableCors({
+    origin: '*',
+    credentials: true, // nếu cần gửi cookie
+  });
+
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   await app.listen(3000);
