@@ -24,7 +24,33 @@ export class TicketsService {
           ? { connect: followerIds.map((id) => ({ id })) }
           : undefined,
       },
-      include: { followers: true },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        followers: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     // Ghi activity log
@@ -39,7 +65,35 @@ export class TicketsService {
 
   async findAll(user: { userId: number; role: Role }): Promise<Ticket[]> {
     if (user.role === Role.ADMIN) {
-      return this.prisma.ticket.findMany();
+      return this.prisma.ticket.findMany({
+        include: {
+          customer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+          createdBy: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          assignedTo: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          followers: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
     }
 
     return this.prisma.ticket.findMany({
@@ -50,6 +104,33 @@ export class TicketsService {
           { followers: { some: { id: user.userId } } },
         ],
       },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        followers: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 
@@ -57,7 +138,33 @@ export class TicketsService {
   async findOne(id: number, user: { userId: number; role: Role }) {
     const ticket = await this.prisma.ticket.findUnique({
       where: { id },
-      include: { followers: true },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        followers: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     if (!ticket) return null;
@@ -90,7 +197,33 @@ export class TicketsService {
           ? { set: followerIds.map((id) => ({ id })) }
           : undefined,
       },
-      include: { followers: true },
+      include: {
+        customer: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        assignedTo: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        followers: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     // Ghi activity log cho các trường quan trọng
