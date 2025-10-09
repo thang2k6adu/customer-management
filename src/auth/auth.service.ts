@@ -17,21 +17,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async testError(a: any): Promise<number> {
-    if(a > 1){
-      console.log('No error');
-      return 2;
-    }
-
-    console.log('This is a test log from AuthService');
-    throw new Error('This is a test error from AuthService');
-  }
-
   async register(registerDto: RegisterDto) {
     const userExist: User | null = await this.prisma.user.findUnique({
       where: { email: registerDto.email },
     });
-    this.testError(1);
     if (userExist) throw new ConflictException('Email already registered');
 
     const hashed: string = await bcrypt.hash(registerDto.password, 10);
